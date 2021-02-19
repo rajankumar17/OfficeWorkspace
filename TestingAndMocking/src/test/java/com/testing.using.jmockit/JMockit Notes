@@ -1,0 +1,69 @@
+What is JMockit?
+JMockit is open source software licensed under the MIT License. It includes APIs for mocking, faking, and integration testing, and a code coverage tool.
+The library is meant to be used together with a testing framework such as JUnit or TestNG.
+
+Why JMockit?
+Well the most important reason to opt for JMockit is because it lets us mock anything. And we mean it. Literally anything.
+
+JMockit provides us APIs to mock:
+    Public Methods with void and non-void return types
+    Private Methods with void and non-void return types
+    Field Values
+    Static Methods
+    Static Blocks
+    Constructors
+    JMockit provides ways to record and verify the mocked values
+    JMockit provides a lot of useful and powerful annotations to ease down the testing.
+For example: @Tested @Injectable, we will be covering few of them in this blog.
+
+Now let us dive into the ocean called JMockit.
+Step 1: Annotations: As we mentioned, there are a number of annotations, so let’s see the most frequently used:
+
+@Tested:
+    This annotation is used to get an initialized object of the class that we want to test along with the injection of the dependencies.
+@Mocked:
+    This annotation is used to provide a mock field/parameter for the class being tested.
+    The type of the mock field or parameter can be any kind of reference type: an interface, a class (including abstract and final ones),
+    an annotation, or an enum. But primitive and array types are not provided (to the class being tested) using @Mocked.
+    A mocked instance of that type is automatically created and assigned to the mock field/parameter.
+@Injectable:
+    Indicates that the value of a mock field or mock parameter will be an isolated mocked instance,
+    intended to be passed or injected into the code under test. Such instances can be said to be proper mock objects, in contrast to the mocked instances of a regular @Mocked type.
+
+So now we got the definitions of both, but in common terms what’s the basic difference between @Mocked and @Injectable?
+    @Mocked will mock everything and all instances of that class, and
+    @Injectable will only mock a specific method/field of one instance of that class.
+
+    When you have done explicit injection (like using Guice), you have to use @Injectable, otherwise you will get:
+    java.lang.IllegalArgumentException: No constructor in tested class that can be satisfied by available tested/injectable values.
+
+
+Step 2: JMockit provides three mocking APIs that helps us achieve the mocking (or faking) methods, fields constructors and statics, we discussed above.
+    MockUp<>() API
+    Expectations() API
+    Deencapsulation API
+
+So first thing is first, Let’s undergo the key difference between the three:
+MockUp<>()
+    In MockUp the parameter values doesn’t matter, we provide (override with) a fake implementation of the method. And whenever the method is called,
+    this mocking is used.
+    Once the MockUp is provided, it will be called as many times that particular method is called.
+    The order of MockUps (when multiple methods are mocked) is not important.
+
+Expectations()
+    In Injectable the values we are passing decides the result of that method. So we use it when, for different values, we “expect” different values.
+    If the same method (whose expectations is given) has multiple calls, we have to provide “number of calls” otherwise we would get exception.
+    There are three ways to provide number of repetitions: times (for providing exact number of times), minTimes
+    (for providing the least number of times it should be called), maxTimes (for providing the at-most number of times allowed).
+    The order of Expectations provided for multiple methods is critically important. It has to be in the same order as the methods
+    have been called in the actual code.
+
+Deencapsulation
+    Deencapsulation provides method for reflecting and calling private methods, fields and instances of objects being used in the Tested class.
+    It has methods to set field values, to invoke private methods, get instance for an inner class etc.
+
+Ok now let’s have a small cheat sheet of when to use what:
+    Behavior (parameter values) matters, use Expectations else use MockUp.
+    Number of calls matter, use Expectations else use MockUp.
+    Faking static blocks, static methods or constructors, Use MockUp.
+    Want to test private methods and mock inner classes, use Deencapsulation.
